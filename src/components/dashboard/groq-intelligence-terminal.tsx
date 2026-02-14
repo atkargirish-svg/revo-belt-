@@ -29,7 +29,7 @@ const recommendations = [
   },
 ];
 
-export function GroqIntelligenceTerminal() {
+export function GeminiIntelligenceTerminal() {
   const [lines, setLines] = useState<string[]>([]);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentText, setCurrentText] = useState('');
@@ -65,7 +65,7 @@ export function GroqIntelligenceTerminal() {
       <CardHeader>
         <CardTitle className="flex items-center gap-3 text-lg text-green-400">
           <Bot className="h-5 w-5" />
-          Groq Llama-3 Operational Intelligence
+          Gemini Operational Intelligence
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
