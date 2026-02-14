@@ -1,10 +1,9 @@
 "use server";
 
 import {
-  analyzeMachineSustainability as analyzeMachineSustainabilityFlow,
-  type AnalyzeMachineSustainabilityInput,
-  type AnalyzeMachineSustainabilityOutput,
+  analyzeMachineSustainability as analyzeMachineSustainabilityFlow
 } from "@/ai/flows/analyze-machine-sustainability";
+import { type AnalyzeMachineSustainabilityInput, type AnalyzeMachineSustainabilityOutput } from "@/lib/types";
 
 export async function analyzeMachineSustainability(
   input: AnalyzeMachineSustainabilityInput
