@@ -17,6 +17,7 @@ import { WaveAnimation } from "./wave-animation";
 import { Co2Chart } from "./co2-chart";
 import { SensorFeed } from "./sensor-feed";
 import { AcousticSensor } from "./acoustic-sensor";
+import { GroqIntelligenceTerminal } from "./groq-intelligence-terminal";
 
 const initialChartData: ChartDataPoint[] = Array.from({ length: 10 }, (_, i) => ({
   time: format(new Date(Date.now() - (9 - i) * 5000), "HH:mm:ss"),
@@ -145,6 +146,10 @@ export function Dashboard() {
         <aside className="col-span-12 lg:col-span-3">
           <SensorFeed alerts={alerts} />
         </aside>
+
+        <div className="col-span-12">
+          <GroqIntelligenceTerminal />
+        </div>
       </div>
     </div>
   );
