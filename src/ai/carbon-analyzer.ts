@@ -13,6 +13,7 @@ export type CarbonAnalysisOutput = z.infer<typeof CarbonAnalysisOutputSchema>;
 const carbonAnalysisPrompt = ai.definePrompt(
   {
     name: 'carbonAnalysisPrompt',
+    model: 'googleai/gemini-1.5-flash-preview',
     input: {schema: CarbonAnalysisFormSchema},
     output: {schema: CarbonAnalysisOutputSchema},
     prompt: `You are 'EcoSync Core', an advanced Industrial Carbon Intelligence Engine designed for small-scale manufacturers. 
