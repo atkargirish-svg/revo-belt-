@@ -4,54 +4,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle2, Server } from "lucide-react";
-import type { AnomalyAlert } from "@/lib/types";
+import { Wrench, Tag, Zap, CheckCircle2, Server } from "lucide-react";
+import type { OperationalAdjustment } from "@/lib/types";
 
-export function SensorFeed({ alerts }: { alerts: AnomalyAlert[] }) {
-  const getSeverityColor = (
-    severity: AnomalyAlert["severity"]
-  ): string => {
-    switch (severity) {
-      case "Critical":
-        return "text-red-500 animate-pulse";
-      case "High":
-        return "text-destructive";
-      case "Medium":
-        return "text-orange-400";
-      case "Low":
-        return "text-yellow-400";
-      default:
-        return "text-accent";
-    }
-  };
+export function SensorFeed({ adjustments }: { adjustments: OperationalAdjustment[] }) {
+  const hasAdjustments = adjustments && adjustments.length > 0 && adjustments[0].action !== "Analysis failed. Please try again.";
 
   return (
     <Card className="h-full bg-card border-border shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Server className="h-5 w-5" />
-          Live Sensor Feed
+          Live Operational Feed
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
-          {alerts.map((alert, index) => (
-            <li key={index} className="flex items-start gap-4">
-              <div>
-                {alert.isAnomaly ? (
-                  <AlertTriangle
-                    className={`h-5 w-5 mt-0.5 ${getSeverityColor(alert.severity)}`}
-                  />
-                ) : (
-                  <CheckCircle2 className="h-5 w-5 text-accent mt-0.5" />
-                )}
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">{alert.machineId}</p>
-                <p className={`text-sm ${alert.isAnomaly ? 'text-foreground' : 'text-muted-foreground'}`}>{alert.message}</p>
-              </div>
+          {hasAdjustments ? (
+            adjustments.map((adj, index) => (
+              <li key={index} className="flex items-start gap-4">
+                <Wrench className="h-5 w-5 text-primary mt-1" />
+                <div className="flex-1">
+                  <p className="font-semibold text-foreground">{adj.action}</p>
+                  <div className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                    <span className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /> Est. Cost: ₹{adj.estimated_cost_inr}</span>
+                    <span className="flex items-center gap-1.5"><Zap className="h-3.5 w-3.5" /> CO₂ Cut: {adj.co2_reduction_potential_percent}%</span>
+                  </div>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className="flex items-start gap-4 text-muted-foreground">
+                <CheckCircle2 className="h-5 w-5 text-accent mt-0.5" />
+                <div className="flex-1">
+                    <p className="font-semibold">System Ready</p>
+                    <p className="text-sm">Start an analysis to receive operational adjustments.</p>
+                </div>
             </li>
-          ))}
+          )}
         </ul>
       </CardContent>
     </Card>
