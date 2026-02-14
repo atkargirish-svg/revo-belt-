@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { BarChart, Bot, TrendingUp } from "lucide-react";
 
@@ -21,34 +21,58 @@ import { GeminiIntelligenceTerminal } from "./groq-intelligence-terminal";
 
 const initialChartData: ChartDataPoint[] = Array.from({ length: 10 }, (_, i) => ({
   time: format(new Date(Date.now() - (9 - i) * 5000), "HH:mm:ss"),
-  co2: 40 + Math.random() * 10,
-  acoustic: 75 + Math.random() * 15,
+  co2: null,
+  acoustic: null,
 }));
 
 const initialAlerts: AnomalyAlert[] = [
-    { machineId: 'Machine 1', isAnomaly: false, message: 'Thermal levels are normal.', anomalyType: 'None', severity: 'None' },
-    { machineId: 'Machine 2', isAnomaly: false, message: 'Acoustic signature is stable.', anomalyType: 'None', severity: 'None' }
+    { machineId: 'Machine 1', isAnomaly: false, message: 'System standing by.', anomalyType: 'None', severity: 'None' },
+    { machineId: 'Machine 2', isAnomaly: false, message: 'System standing by.', anomalyType: 'None', severity: 'None' }
 ]
 
 export function Dashboard() {
   const { toast } = useToast();
-  const [co2, setCo2] = useState(45.2);
-  const [acoustic, setAcoustic] = useState(82);
-  const [energy, setEnergy] = useState(142);
+  const [co2, setCo2] = useState(0);
+  const [acoustic, setAcoustic] = useState(0);
+  const [energy, setEnergy] = useState(0);
   const [chartData, setChartData] =
     useState<ChartDataPoint[]>(initialChartData);
   const [alerts, setAlerts] = useState<AnomalyAlert[]>(initialAlerts);
+  const [isAuditing, setIsAuditing] = useState(false);
+
+  const acousticRef = useRef(acoustic);
+  acousticRef.current = acoustic;
+
+  const handleToggleAudit = () => {
+    setIsAuditing((prev) => !prev);
+  };
+
+  const handleAcousticData = (db: number) => {
+    setAcoustic(Number(db.toFixed(1)));
+  };
+
 
   useEffect(() => {
+    if (!isAuditing) {
+      setCo2(0);
+      setAcoustic(0);
+      setEnergy(0);
+      setChartData(initialChartData);
+      setAlerts(initialAlerts);
+      return;
+    }
+
     const interval = setInterval(async () => {
-      // 1. Simulate new sensor data
-      const newAcoustic = 75 + Math.random() * 20; // 75-95 dB
+      const currentAcoustic = acousticRef.current;
+      if (currentAcoustic === 0) return;
+
+      // 1. Simulate other sensor data
       const newThermal = 50 + Math.random() * 25; // 50-75 °C
       const newEnergy = 140 + Math.random() * 10; // 140-150 kWh
 
       // 2. Call server actions
       const emissionPromise = estimateCarbonEmissions({
-        acousticNoiseDb: newAcoustic,
+        acousticNoiseDb: currentAcoustic,
         thermalTempC: newThermal,
         energyKwh: newEnergy,
       });
@@ -63,7 +87,7 @@ export function Dashboard() {
 
       const anomalyPromise2 = generateAnomalyAlert({
         machineId: "Machine 2",
-        acousticLevel: newAcoustic, // Focus on acoustic for Machine 2
+        acousticLevel: currentAcoustic, // Focus on acoustic for Machine 2
         thermalLevel: 55 + Math.random() * 5,
         maxAcoustic: 88,
         maxThermal: 70,
@@ -72,7 +96,6 @@ export function Dashboard() {
       const [emissionData, anomaly1, anomaly2] = await Promise.all([emissionPromise, anomalyPromise1, anomalyPromise2]);
 
       // 3. Update state
-      setAcoustic(Number(newAcoustic.toFixed(1)));
       setEnergy(Number(newEnergy.toFixed(1)));
       if (emissionData) {
         setCo2(Number(emissionData.estimatedCo2KgPerHour.toFixed(1)));
@@ -96,13 +119,13 @@ export function Dashboard() {
         {
           time: format(new Date(), "HH:mm:ss"),
           co2: emissionData?.estimatedCo2KgPerHour ?? null,
-          acoustic: newAcoustic,
+          acoustic: currentAcoustic,
         },
       ]);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [toast]);
+  }, [isAuditing, toast]);
 
   const co2Color = co2 > 50 ? "hsl(var(--destructive))" : "hsl(var(--accent))";
 
@@ -125,7 +148,7 @@ export function Dashboard() {
             unit="dB"
             icon={BarChart}
           >
-            <WaveAnimation />
+            {isAuditing && <WaveAnimation />}
           </KpiCard>
           <KpiCard
             title="Energy Usage Pattern"
@@ -136,7 +159,11 @@ export function Dashboard() {
         </div>
 
         <div className="col-span-12">
-          <AcousticSensor />
+          <AcousticSensor 
+            isAuditing={isAuditing}
+            onToggleAudit={handleToggleAudit}
+            onDbLevelChange={handleAcousticData}
+          />
         </div>
 
         <main className="col-span-12 row-span-2 lg:col-span-9">

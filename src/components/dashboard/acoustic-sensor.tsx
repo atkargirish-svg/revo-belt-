@@ -23,23 +23,31 @@ const FrequencyVisualizer = ({ bars, isListening }: { bars: number[]; isListenin
   );
 };
 
-export function AcousticSensor() {
-  const [isListening, setIsListening] = useState(false);
+type AcousticSensorProps = {
+  onDbLevelChange: (db: number) => void;
+  isAuditing: boolean;
+  onToggleAudit: () => void;
+};
+
+
+export function AcousticSensor({ onDbLevelChange, isAuditing, onToggleAudit }: AcousticSensorProps) {
   const [dbLevel, setDbLevel] = useState(0);
   const [frequencyBars, setFrequencyBars] = useState<number[]>(Array(64).fill(2));
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isListening) {
+    if (isAuditing) {
       interval = setInterval(() => {
         const newDb = Math.random() * (95 - 60) + 60;
         setDbLevel(newDb);
+        onDbLevelChange(newDb);
 
         const newBars = Array.from({ length: 64 }, () => Math.random() * 100);
         setFrequencyBars(newBars);
       }, 1000);
     } else {
         setDbLevel(0);
+        onDbLevelChange(0);
         setFrequencyBars(Array(64).fill(2));
     }
 
@@ -48,14 +56,10 @@ export function AcousticSensor() {
         clearInterval(interval);
       }
     };
-  }, [isListening]);
-
-  const handleToggleListening = () => {
-    setIsListening((prev) => !prev);
-  };
+  }, [isAuditing, onDbLevelChange]);
 
   const isHighDb = dbLevel > 85;
-  const statusMessage = isListening 
+  const statusMessage = isAuditing 
     ? (isHighDb ? "High Acoustic Signature Detected -> Inefficient Motor -> High Carbon Output" : "Optimal Acoustic Range")
     : "Standing by...";
 
@@ -70,27 +74,27 @@ export function AcousticSensor() {
                 </CardTitle>
                 <CardDescription>Use device microphone to simulate an acoustic audit.</CardDescription>
             </div>
-            <Button onClick={handleToggleListening} size="lg" className={cn("w-full sm:w-auto", isListening && 'bg-destructive hover:bg-destructive/90')}>
-                <Radio className={cn("mr-2 h-5 w-5", isListening && "animate-pulse")} />
-                {isListening ? 'Stop Audit' : 'Start Acoustic Audit'}
+            <Button onClick={onToggleAudit} size="lg" className={cn("w-full sm:w-auto", isAuditing && 'bg-destructive hover:bg-destructive/90')}>
+                <Radio className={cn("mr-2 h-5 w-5", isAuditing && "animate-pulse")} />
+                {isAuditing ? 'Stop Audit' : 'Start Acoustic Audit'}
             </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative flex items-center justify-center h-32 p-4 rounded-lg bg-background/50 border border-border overflow-hidden">
-            <FrequencyVisualizer bars={frequencyBars} isListening={isListening} />
+            <FrequencyVisualizer bars={frequencyBars} isListening={isAuditing} />
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 backdrop-blur-[2px]">
                 <div className={cn("text-5xl font-bold tracking-tighter transition-colors", isHighDb ? 'text-destructive' : 'text-accent')}>
                     {dbLevel.toFixed(1)}
                     <span className="text-2xl text-muted-foreground ml-2">dB</span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1 font-mono uppercase tracking-widest">
-                    {isListening ? 'Listening...' : 'Offline'}
+                    {isAuditing ? 'Listening...' : 'Offline'}
                 </div>
             </div>
         </div>
         <div className="flex items-center justify-center p-3 rounded-md bg-background/50 text-center min-h-[44px]">
-            {isListening ? (
+            {isAuditing ? (
                 isHighDb ? (
                     <div className="flex items-center gap-2 text-destructive">
                         <AlertTriangle className="h-5 w-5 animate-pulse" />
