@@ -46,7 +46,7 @@ export const carbonAnalyzerFlow = ai.defineFlow(
     outputSchema: CarbonAnalysisOutputSchema,
   },
   async (input) => {
-    const {output} = await carbonAnalyzerFlow(input);
+    const {output} = await carbonAnalysisPrompt(input);
     if (!output) {
       throw new Error('Could not generate analysis.');
     }
