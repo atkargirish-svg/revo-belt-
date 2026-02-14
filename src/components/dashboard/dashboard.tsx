@@ -16,6 +16,7 @@ import { KpiCard } from "./kpi-card";
 import { WaveAnimation } from "./wave-animation";
 import { Co2Chart } from "./co2-chart";
 import { SensorFeed } from "./sensor-feed";
+import { AcousticSensor } from "./acoustic-sensor";
 
 const initialChartData: ChartDataPoint[] = Array.from({ length: 10 }, (_, i) => ({
   time: format(new Date(Date.now() - (9 - i) * 5000), "HH:mm:ss"),
@@ -131,6 +132,10 @@ export function Dashboard() {
             unit="kWh"
             icon={TrendingUp}
           />
+        </div>
+
+        <div className="col-span-12">
+          <AcousticSensor />
         </div>
 
         <main className="col-span-12 row-span-2 lg:col-span-9">
