@@ -29,7 +29,7 @@ export const AnalyzeMachineSustainabilityOutputSchema = z.object({
     estimated_cost_inr: z.number().describe("The approximate cost of implementing the action, in Indian Rupees (INR)."),
     co2_reduction_potential_percent: z.number().describe("The estimated percentage reduction in CO2 emissions if this action is taken."),
     difficulty: z.string().describe("The difficulty of implementing the action (e.g., 'Low', 'Medium', 'High')."),
-  })).describe("An array of exactly 3 operational adjustment recommendations."),
+  })).describe("An array of up to 3 operational adjustment recommendations."),
   efficiency_score_out_of_100: z.number().describe("An overall efficiency score for the machine from 0 to 100, where 100 is perfectly efficient."),
 });
 export type AnalyzeMachineSustainabilityOutput = z.infer<typeof AnalyzeMachineSustainabilityOutputSchema>;

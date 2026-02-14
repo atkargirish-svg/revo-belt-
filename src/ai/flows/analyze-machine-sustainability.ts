@@ -52,8 +52,9 @@ const analyzeMachineSustainabilityFlow = ai.defineFlow(
     if (!output) {
       throw new Error("Failed to get an analysis from the AI model.");
     }
+    // Filter out any placeholder or empty recommendations from the model.
     const nonEmptyAdjustments = output.operational_adjustments.filter(
-        (adj) => adj.action && adj.action.trim() !== '' && adj.action.trim().toLowerCase() !== '// action 2'
+        (adj) => adj.action && adj.action.trim() !== '' && !adj.action.trim().startsWith('//')
     );
     return { ...output, operational_adjustments: nonEmptyAdjustments };
   }
