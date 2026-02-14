@@ -1,8 +1,9 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getCarbonAnalysis } from './actions';
-import { Leaf, Zap, Thermometer, Radio, Wrench, BarChart } from 'lucide-react';
+import { Leaf, Zap, Wrench, BarChart } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -102,7 +103,7 @@ function ResultsDisplay({ data }: { data: CarbonAnalysisOutput }) {
 }
 
 export default function Home() {
-  const [state, formAction] = useFormState(getCarbonAnalysis, initialState);
+  const [state, formAction] = useActionState(getCarbonAnalysis, initialState);
 
   return (
     <main className="min-h-screen bg-background text-foreground font-body p-4 sm:p-6 lg:p-8">
