@@ -4,41 +4,35 @@
 
 @layer base {
   :root {
-    --background: 222 47% 8%; /* Slate-950 */
+    --background: 224 71% 4%; /* Midnight Blue */
     --foreground: 210 40% 98%; /* Slate-50 */
 
-    --card: 222 47% 11%; /* Slate-900 */
+    --card: 224 71% 9%; /* Darker Blue */
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 8%;
+    --popover: 224 71% 4%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 182 100% 74%; /* Electric Blue */
-    --primary-foreground: 222 47% 11%;
+    --primary: 130 84% 50%; /* Vibrant Green */
+    --primary-foreground: 224 71% 4%;
 
-    --secondary: 215 28% 27%; /* Slate-700 */
+    --secondary: 215 28% 17%; /* Slate-800 */
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 215 28% 27%;
+    --muted: 215 28% 17%;
     --muted-foreground: 217 33% 65%; /* Slate-400 */
 
-    --accent: 128 100% 54%; /* Neon Green */
-    --accent-foreground: 222 47% 11%;
+    --accent: 130 84% 50%;
+    --accent-foreground: 224 71% 4%;
 
-    --destructive: 0 84% 60%; /* Brighter Red */
+    --destructive: 0 72% 51%; /* Brighter Red */
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 28% 17%; /* Darker border for darker bg */
-    --input: 215 28% 22%;
-    --ring: 128 100% 54%;
+    --border: 215 28% 17%; /* Slate-800 */
+    --input: 215 28% 17%;
+    --ring: 130 84% 50%;
 
     --radius: 0.5rem;
-
-    --chart-1: 128 100% 54%; /* Neon Green */
-    --chart-2: 182 100% 74%; /* Electric Blue */
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
   }
 }
 
