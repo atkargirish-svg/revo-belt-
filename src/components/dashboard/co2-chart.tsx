@@ -13,7 +13,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
-import type { ChartDataPoint } from "@/lib/types";
 import {
   Line,
   LineChart,
@@ -21,26 +20,28 @@ import {
   XAxis,
   YAxis,
   Legend,
+  Area,
 } from "recharts";
+import type { ChartData } from "@/lib/types";
 
 const chartConfig = {
   co2: {
-    label: "CO₂ Emissions (kg/hr)",
+    label: "CO₂ Emission (kg/hr)",
     color: "hsl(var(--chart-1))",
   },
-  acoustic: {
-    label: "Acoustic Noise (dB)",
+  load: {
+    label: "Acoustic/Energy Load",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
-export function Co2Chart({ data }: { data: ChartDataPoint[] }) {
+export function Co2Chart({ data }: { data: ChartData[] }) {
   return (
-    <Card className="h-full bg-card border-border shadow-lg flex flex-col">
+    <Card className="h-full bg-card/50 border-border/50 shadow-lg flex flex-col backdrop-blur-sm">
       <CardHeader>
-        <CardTitle>Acoustic Noise vs. CO₂ Emissions</CardTitle>
+        <CardTitle>Carbon Emission Analysis</CardTitle>
         <CardDescription>
-          Real-time correlation between sensor data and estimated emissions.
+          Real-time correlation between indirect signals and CO₂ emissions (Last 6 Hours).
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -49,25 +50,28 @@ export function Co2Chart({ data }: { data: ChartDataPoint[] }) {
             data={data}
             margin={{
               top: 5,
-              right: 20,
-              left: 20,
+              right: 30,
+              left: 0,
               bottom: 5,
             }}
           >
             <defs>
-                <filter id="glow-co2" x="-50%" y="-50%" width="200%" height="200%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="hsl(var(--chart-1))" floodOpacity="0.7"/>
-                </filter>
-                <filter id="glow-acoustic" x="-50%" y="-50%" width="200%" height="200%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="hsl(var(--chart-2))" floodOpacity="0.7"/>
-                </filter>
+              <linearGradient id="fillCo2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
+              </linearGradient>
+              <linearGradient id="fillLoad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
+              </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="hsl(var(--border) / 0.5)"
+              vertical={false}
             />
             <XAxis
-              dataKey="time"
+              dataKey="hour"
               stroke="hsl(var(--muted-foreground))"
               fontSize={12}
               tickLine={false}
@@ -101,23 +105,22 @@ export function Co2Chart({ data }: { data: ChartDataPoint[] }) {
               }
             />
             <Legend verticalAlign="top" height={40} />
-            <Line
+            <Area
               yAxisId="left"
               type="monotone"
               dataKey="co2"
               stroke="hsl(var(--chart-1))"
               strokeWidth={2}
-              dot={false}
-              style={{ filter: "url(#glow-co2)" }}
+              fill="url(#fillCo2)"
             />
             <Line
               yAxisId="right"
               type="monotone"
-              dataKey="acoustic"
+              dataKey="load"
               stroke="hsl(var(--chart-2))"
               strokeWidth={2}
+              strokeDasharray="5 5"
               dot={false}
-              style={{ filter: "url(#glow-acoustic)" }}
             />
           </LineChart>
         </ChartContainer>
