@@ -1,3 +1,4 @@
+
 'use server';
 
 import {ai} from '@/ai/genkit';
@@ -13,7 +14,6 @@ export type CarbonAnalysisOutput = z.infer<typeof CarbonAnalysisOutputSchema>;
 const carbonAnalysisPrompt = ai.definePrompt(
   {
     name: 'carbonAnalysisPrompt',
-    model: 'googleai/gemini-pro',
     input: {schema: CarbonAnalysisFormSchema},
     output: {schema: CarbonAnalysisOutputSchema},
     prompt: `You are 'EcoSync Core', an advanced Industrial Carbon Intelligence Engine designed for small-scale manufacturers. 
@@ -33,30 +33,20 @@ LOGIC & CONSTRAINTS:
 4.  Calculate an estimated 'current_co2_kg_per_hour', an 'optimal_co2_kg_per_hour' (based on just the energy data without penalties), and the 'excess_carbon_percent'.
 5.  Provide up to 3 highly practical, low-cost "Operational Adjustments" that a small factory owner can do today to fix the inefficiencies suggested by the indirect signals.
 6.  Calculate an overall 'efficiency_score_out_of_100' based on how much the machine is deviating from the optimal state. A higher deviation means a lower score.
-
-OUTPUT FORMAT:
-You MUST respond ONLY with a valid JSON object. Do not include markdown formatting like \`\`\`json or any conversational text.
 `,
   },
 );
 
-export const carbonAnalyzerFlow = ai.defineFlow(
-  {
-    name: 'carbonAnalyzerFlow',
-    inputSchema: CarbonAnalysisFormSchema,
-    outputSchema: CarbonAnalysisOutputSchema,
-  },
-  async (input) => {
-    const {output} = await carbonAnalysisPrompt(input);
-    if (!output) {
-      throw new Error('Could not generate analysis.');
-    }
-    
-    // Filter out any empty recommendations just in case
-    output.operational_adjustments = output.operational_adjustments.filter(
-        (rec) => rec.action && rec.action.trim() !== ''
-    );
-
-    return output;
+export async function carbonAnalyzerFlow(input: CarbonAnalysisInput): Promise<CarbonAnalysisOutput> {
+  const {output} = await carbonAnalysisPrompt(input);
+  if (!output) {
+    throw new Error('Could not generate analysis.');
   }
-);
+  
+  // Filter out any empty recommendations just in case
+  output.operational_adjustments = output.operational_adjustments.filter(
+      (rec) => rec.action && rec.action.trim() !== ''
+  );
+
+  return output;
+}
