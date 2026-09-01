@@ -104,7 +104,8 @@ export default function SettingsPage() {
         status: 'online',
         deviceId: 'BELT_NODE_01',
         lastSeen: timestamp,
-        firmwareVersion: '1.0.0'
+        firmwareVersion: '1.0.0',
+        alarm: false
       },
       current: {
         vibration: 3.2,

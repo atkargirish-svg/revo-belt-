@@ -4,6 +4,7 @@ export interface SystemStatus {
   deviceId: string;
   lastSeen: number;
   firmwareVersion: string;
+  alarm?: boolean;
 }
 
 export interface SensorData {

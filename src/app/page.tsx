@@ -6,6 +6,8 @@ import { KPISection } from '@/components/dashboard/KPISection';
 import { ConveyorVisualization } from '@/components/dashboard/ConveyorVisualization';
 import { calculateHealthScore } from '@/lib/utils/health-score';
 import { cn } from '@/lib/utils';
+import { db } from '@/lib/firebase';
+import { ref, set } from 'firebase/database';
 import { 
   AlertCircle, 
   Activity, 
@@ -16,6 +18,8 @@ import {
   FileText,
   Wrench,
   Map as MapIcon,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Area, AreaChart, ResponsiveContainer, YAxis, XAxis, Tooltip, CartesianGrid } from 'recharts';
@@ -31,7 +35,7 @@ const dummyTrendData = [
 ];
 
 export default function Dashboard() {
-  const { current, sections, alerts, config } = useRTDB();
+  const { current, sections, alerts, config, system } = useRTDB();
 
   const activeConfig = config?.thresholds || {
     vibration: { warning: 5, critical: 8 },
@@ -43,6 +47,15 @@ export default function Dashboard() {
   const healthScore = current ? calculateHealthScore(current, activeConfig) : 76;
   const activeAlertsCount = alerts ? Object.values(alerts).filter(a => !a.acknowledged).length : 3;
 
+  const toggleAlarm = async () => {
+    const newStatus = !system?.alarm;
+    try {
+      await set(ref(db, 'system/alarm'), newStatus);
+    } catch (e) {
+      console.error("Failed to toggle alarm:", e);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0d0e12] text-white p-6 lg:p-10 font-sans">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
@@ -51,15 +64,23 @@ export default function Dashboard() {
           <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">Real-time Conveyor Monitoring System</p>
         </div>
         <div className="flex items-center gap-4">
+          <button 
+            onClick={toggleAlarm}
+            className={cn(
+              "flex items-center gap-2 px-6 py-2.5 rounded-xl border transition-all font-black text-[10px] uppercase tracking-widest",
+              system?.alarm 
+                ? "bg-red-600 border-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.4)]" 
+                : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700"
+            )}
+          >
+            {system?.alarm ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            {system?.alarm ? "Stop Alarm" : "Trigger Alarm"}
+          </button>
+          
           <div className="flex items-center gap-2 bg-[#16171d] px-4 py-2 rounded-xl border border-zinc-800/50">
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Auto Refresh</span>
             <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#22c55e] animate-pulse" />
             <span className="text-[10px] font-bold text-zinc-200 uppercase tracking-widest">On</span>
-          </div>
-          <div className="flex items-center gap-2 bg-[#16171d] px-4 py-2 rounded-xl border border-zinc-800/50 text-zinc-400 cursor-pointer hover:text-white transition-colors">
-            <Clock size={14} />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Last 24 Hours</span>
-            <ChevronRight size={12} className="rotate-90 opacity-50" />
           </div>
         </div>
       </header>
