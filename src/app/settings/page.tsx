@@ -41,6 +41,7 @@ export default function SettingsPage() {
     setIsInitializing(true);
     const timestamp = Date.now();
     
+    // Exact Industrial Structure Requested
     const sections: Record<string, any> = {
       "section_01": {
         name: "Section 01",
@@ -154,6 +155,7 @@ export default function SettingsPage() {
     };
 
     try {
+      // Direct set to Firebase RTDB root
       await set(ref(db), initialData);
       toast({
         title: "Database Seeding Successful",
@@ -164,7 +166,7 @@ export default function SettingsPage() {
       toast({
         variant: "destructive",
         title: "Push Failed",
-        description: "Please check your Firebase RTDB Rules (set to true).",
+        description: "Check Firebase Rules (set to true).",
       });
     } finally {
       setIsInitializing(false);
