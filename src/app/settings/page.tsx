@@ -41,6 +41,7 @@ export default function SettingsPage() {
     setIsInitializing(true);
     const timestamp = Date.now();
     
+    // Exact Industrial Structure Requested
     const sections: Record<string, any> = {
       "section_01": { name: "Section 01", status: "normal", vibration: 3.1, temperature: 41.2, speed: 1445, alignment: 0.6, lastUpdated: timestamp },
       "section_02": { name: "Section 02", status: "normal", vibration: 3.8, temperature: 43.1, speed: 1452, alignment: 1.1, lastUpdated: timestamp },
@@ -78,25 +79,28 @@ export default function SettingsPage() {
         }
       },
       alerts: {
-        "alert_001": {
-          id: "alert_001", severity: "warning", sensor: "vibration", sectionId: "section_03",
+        "alert_initial": {
+          id: "alert_initial", severity: "warning", sensor: "vibration", sectionId: "section_03",
           message: "High vibration detected at Section 03", value: 6.7, threshold: 5, timestamp: timestamp, acknowledged: false
         }
+      },
+      history: {
+        [timestamp]: { vibration: 3.2, temperature: 42.5, speed: 1450, alignment: 0.8, sectionId: "section_03", timestamp: timestamp }
       }
     };
 
     try {
       await set(ref(db), initialData);
       toast({
-        title: "Database Seeding Successful",
-        description: "Exact industrial structure set in Firebase RTDB.",
+        title: "RTDB Seeded Successfully",
+        description: "Exact structure (system/alarm, current/health) is now live.",
       });
     } catch (e: any) {
       console.error(e);
       toast({
         variant: "destructive",
-        title: "Push Failed",
-        description: "Check Firebase Rules (set to true).",
+        title: "Seed Failed",
+        description: "Ensure Firebase RTDB Rules are set to true.",
       });
     } finally {
       setIsInitializing(false);
@@ -151,10 +155,10 @@ export default function SettingsPage() {
 
         <div className="industrial-card p-6 space-y-4 border-blue-500/20 bg-blue-500/[0.02]">
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 flex items-center gap-2">
-            <Database size={14} /> Database Reset
+            <Database size={14} /> Database Init
           </h3>
           <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
-            Reset Firebase RTDB to the exact industrial monitoring structure requested.
+            Reset RTDB to exact structure: /system/alarm & /current (vibration, temp, health, etc).
           </p>
           <button 
             onClick={seedDemoData}
