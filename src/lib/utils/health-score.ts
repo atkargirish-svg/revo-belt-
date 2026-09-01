@@ -2,15 +2,17 @@
 import { SensorData, ThresholdConfig } from '../types/sensor';
 
 export function calculateHealthScore(data: SensorData, config: ThresholdConfig): number {
+  if (!data || !config) return 100;
+  
   let score = 100;
 
   // Vibration Penalty
-  if (data.vibration > config.vibration.critical) score -= 40;
-  else if (data.vibration > config.vibration.warning) score -= 15;
+  if (data.vibration > config.vibration.critical) score -= 45;
+  else if (data.vibration > config.vibration.warning) score -= 20;
 
   // Temperature Penalty
-  if (data.temperature > config.temperature.critical) score -= 40;
-  else if (data.temperature > config.temperature.warning) score -= 15;
+  if (data.temperature > config.temperature.critical) score -= 45;
+  else if (data.temperature > config.temperature.warning) score -= 20;
 
   // Speed Penalty
   if (data.speed < config.speed.minCritical || data.speed > config.speed.maxCritical) score -= 30;
@@ -18,8 +20,8 @@ export function calculateHealthScore(data: SensorData, config: ThresholdConfig):
 
   // Alignment Penalty
   const absOffset = Math.abs(data.alignment);
-  if (absOffset > config.alignment.critical) score -= 25;
-  else if (absOffset > config.alignment.warning) score -= 10;
+  if (absOffset > config.alignment.critical) score -= 30;
+  else if (absOffset > config.alignment.warning) score -= 15;
 
   return Math.max(0, score);
 }

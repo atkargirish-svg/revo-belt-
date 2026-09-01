@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ref, onValue, onDisconnect, serverTimestamp, update } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { db } from '@/lib/firebase';
 import { MachineState } from '@/lib/types/sensor';
 
@@ -28,7 +28,7 @@ export function useRTDB() {
 
     const unsubscribers = [
       onValue(refs.connected, (snap) => {
-        setState(s => ({ ...s, isConnected: snap.val() }));
+        setState(s => ({ ...s, isConnected: !!snap.val() }));
       }),
       onValue(refs.system, (snap) => {
         setState(s => ({ ...s, system: snap.val() }));
