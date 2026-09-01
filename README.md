@@ -12,12 +12,12 @@ Aapka ESP32/NodeMCU niche wala JSON structure send karega:
 
 ```json
 {
-  "vibration": 3.4,      // Value in mm/s
-  "temperature": 45.2,    // Value in Celsius
-  "speed": 1.45,          // Value in m/s
-  "alignment": 0.5,       // Lateral offset in mm
-  "sectionId": "section_03", 
-  "sectionName": "Processing Zone",
+  "vibration": 3.2,
+  "temperature": 42.5,
+  "speed": 1450,
+  "alignment": 0.8,
+  "sectionId": "section_03",
+  "sectionName": "Section 03",
   "timestamp": 1716542400000 
 }
 ```

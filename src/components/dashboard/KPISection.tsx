@@ -41,8 +41,8 @@ export function KPISection({ current, config }: KPIProps) {
     {
       label: 'Belt Speed',
       value: speed,
-      unit: 'm/s',
-      status: 'normal',
+      unit: 'RPM',
+      status: speed > (config?.speed?.maxCritical ?? 1800) || speed < (config?.speed?.minCritical ?? 800) ? 'critical' : 'normal',
       color: 'text-blue-500',
       waveColor: '#3b82f6',
       data: generateData()
@@ -74,7 +74,7 @@ export function KPISection({ current, config }: KPIProps) {
                 card.status === 'warning' ? 'text-orange-500' : 
                 card.label === 'Belt Speed' ? 'text-blue-500' : 'text-primary'
               )}>
-                {Number(card.value || 0).toFixed(1)}
+                {Number(card.value).toFixed(1)}
               </span>
               <span className="text-zinc-600 text-[9px] font-bold uppercase">{card.unit}</span>
             </div>

@@ -39,35 +39,83 @@ export default function SettingsPage() {
 
   const seedDemoData = async () => {
     setIsInitializing(true);
-    const sections: Record<string, any> = {};
-    for (let i = 1; i <= 6; i++) {
-      const id = `section_0${i}`;
-      sections[id] = {
-        id,
-        name: `Section 0${i}`,
-        status: 'normal',
-        vibration: 2.5 + Math.random(),
-        temperature: 38 + Math.random() * 5,
-        speed: 1.45 + Math.random() * 0.2,
-        alignment: 0.2 + Math.random() * 0.5,
+    const sections: Record<string, any> = {
+      "section_01": {
+        id: "section_01",
+        name: "Section 01",
+        status: "normal",
+        vibration: 3.1,
+        temperature: 41.2,
+        speed: 1445,
+        alignment: 0.6,
         lastUpdated: Date.now()
-      };
-    }
+      },
+      "section_02": {
+        id: "section_02",
+        name: "Section 02",
+        status: "normal",
+        vibration: 3.8,
+        temperature: 43.1,
+        speed: 1452,
+        alignment: 1.1,
+        lastUpdated: Date.now()
+      },
+      "section_03": {
+        id: "section_03",
+        name: "Section 03",
+        status: "warning",
+        vibration: 6.7,
+        temperature: 55.2,
+        speed: 1448,
+        alignment: 2.8,
+        lastUpdated: Date.now()
+      },
+      "section_04": {
+        id: "section_04",
+        name: "Section 04",
+        status: "normal",
+        vibration: 3.4,
+        temperature: 44.5,
+        speed: 1450,
+        alignment: 0.9,
+        lastUpdated: Date.now()
+      },
+      "section_05": {
+        id: "section_05",
+        name: "Section 05",
+        status: "normal",
+        vibration: 4.0,
+        temperature: 46.2,
+        speed: 1447,
+        alignment: 1.4,
+        lastUpdated: Date.now()
+      },
+      "section_06": {
+        id: "section_06",
+        name: "Section 06",
+        status: "normal",
+        vibration: 3.2,
+        temperature: 42.8,
+        speed: 1451,
+        alignment: 0.7,
+        lastUpdated: Date.now()
+      }
+    };
 
     const initialData = {
       system: {
         status: 'online',
         deviceId: 'BELT_NODE_01',
         lastSeen: Date.now(),
-        firmwareVersion: '1.2.4'
+        firmwareVersion: '1.0.0'
       },
       current: {
         vibration: 3.2,
         temperature: 42.5,
-        speed: 1.45,
+        speed: 1450,
         alignment: 0.8,
-        sectionId: 'section_01',
-        sectionName: 'Main Drive',
+        sectionId: 'section_03',
+        sectionName: 'Section 03',
         timestamp: Date.now()
       },
       sections,
@@ -75,21 +123,31 @@ export default function SettingsPage() {
         thresholds: {
           vibration: { warning: 5, critical: 8 },
           temperature: { warning: 50, critical: 70 },
-          speed: { minWarning: 0.5, maxWarning: 3.0, minCritical: 0.2, maxCritical: 4.0 },
+          speed: { minWarning: 1000, maxWarning: 1600, minCritical: 800, maxCritical: 1800 },
           alignment: { warning: 2, critical: 5 }
         }
       },
       alerts: {
-        "initial_alert": {
-          id: "initial_alert",
+        "alert_001": {
+          id: "alert_001",
           severity: "warning",
           sensor: "vibration",
           sectionId: "section_03",
-          message: "Atypical vibration pattern detected in Processing Zone",
-          value: 5.2,
-          threshold: 5.0,
+          message: "High vibration detected at Section 03",
+          value: 6.7,
+          threshold: 5,
           timestamp: Date.now(),
           acknowledged: false
+        }
+      },
+      history: {
+        [Date.now()]: {
+          vibration: 3.2,
+          temperature: 42.5,
+          speed: 1450,
+          alignment: 0.8,
+          sectionId: "section_03",
+          timestamp: Date.now()
         }
       }
     };
@@ -97,15 +155,15 @@ export default function SettingsPage() {
     try {
       await set(ref(db), initialData);
       toast({
-        title: "Database Initialized",
-        description: "Industrial structure successfully seeded. Check your Firebase console!",
+        title: "Database Seeding Successful",
+        description: "Precise industrial structure push completed.",
       });
     } catch (e: any) {
       console.error(e);
       toast({
         variant: "destructive",
-        title: "Initialization Failed",
-        description: "Check your Firebase Rules (must be set to true for testing).",
+        title: "Push Failed",
+        description: "Check your Firebase Rules (Rules tab -> set to true).",
       });
     } finally {
       setIsInitializing(false);
@@ -165,7 +223,7 @@ export default function SettingsPage() {
             <Database size={14} /> Database Reset
           </h3>
           <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
-            If your Firebase Console shows <span className="text-zinc-300 font-bold">"null"</span>, click below to build the industrial zone structure (Z01-Z06).
+            Click below to build the exact industrial zone structure (Z01-Z06) required by NodeMCU.
           </p>
           <button 
             onClick={seedDemoData}
@@ -267,14 +325,6 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {!localConfig && isConnected && (
-          <div className="md:col-span-2 py-20 text-center industrial-card border-dashed border-zinc-800">
-            <RefreshCw className="mx-auto text-zinc-700 mb-4 animate-spin" size={40} />
-            <p className="text-zinc-600 font-bold uppercase text-xs tracking-widest">Fetching Configuration Nodes...</p>
-            <p className="text-zinc-800 text-[10px] mt-2 italic">If this takes too long, use the "Fix & Seed" button above.</p>
           </div>
         )}
       </div>
