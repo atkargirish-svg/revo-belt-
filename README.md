@@ -1,48 +1,28 @@
 
-# BELTGUARD AI - Industrial IoT Dashboard
+# BELTGUARD AI - NodeMCU Integration Guide
 
-Professional predictive monitoring system for industrial conveyor belts.
+Bhai, NodeMCU se data bhejne ke liye niche wala format use karo. Dashboard auto-update ho jayega.
 
-## 🚀 Setup Instructions
+## 🚀 API Endpoint
+Data ko is path par **PATCH** ya **PUT** karna hai:
+`https://<YOUR-FIREBASE-PROJECT-ID>.firebaseio.com/current.json`
 
-1. **Firebase Project**:
-   - Go to [Firebase Console](https://console.firebase.google.com/).
-   - Enable **Realtime Database** and choose a region.
-   - **Rules**: In the Rules tab, set `.read` and `.write` to `true` (Test Mode).
+## 📊 JSON Format (Hardware Side)
+Aapka ESP32/NodeMCU niche wala JSON structure send karega:
 
-2. **Environment Variables**:
-   - Your `.env.local` must have:
-     ```env
-     NEXT_PUBLIC_FIREBASE_API_KEY=your_key
-     NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.firebaseio.com/
-     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-     ...
-     ```
-
-3. **Initialize Data**:
-   - Open the app, go to **Settings** page.
-   - Click **"Seed Initial Database Structure"**. This creates the necessary nodes.
-
-## 📊 NodeMCU / ESP32 Integration
-
-Send data to the `/current` path using a HTTP PATCH or POST request.
-
-**Endpoint**: `https://<YOUR-PROJECT-ID>.firebaseio.com/current.json`
-**JSON Format**:
 ```json
 {
-  "vibration": 3.4,     // mm/s
-  "temperature": 45.2,   // Celsius
-  "speed": 1.45,         // m/s
-  "alignment": 0.5,      // mm offset
+  "vibration": 3.4,      // Value in mm/s
+  "temperature": 45.2,    // Value in Celsius
+  "speed": 1.45,          // Value in m/s
+  "alignment": 0.5,       // Lateral offset in mm
   "sectionId": "section_03", 
   "sectionName": "Processing Zone",
   "timestamp": 1716542400000 
 }
 ```
 
-## 🛠 Features
-- **Real-time Sync**: Firebase Realtime Database integration.
-- **Z01-Z06 Mapping**: Segmented industrial visualization.
-- **Predictive Analytics**: Genkit-powered maintenance insights.
-```
+## 🛠 Setup Steps
+1. **Firebase Rules**: Console mein jaao, Realtime Database select karo, aur **Rules** tab mein `.read` aur `.write` ko `true` kar do.
+2. **Seeding**: App ke **Settings** page par jaake "Fix & Seed" button dabao taaki initial nodes ban jayein.
+3. **Check Live**: Data send hote hi Dashboard par green signals active ho jayenge.

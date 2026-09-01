@@ -2,10 +2,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ref, update, set, get } from 'firebase/database';
+import { ref, update, set } from 'firebase/database';
 import { db } from '@/lib/firebase';
 import { useRTDB } from '@/hooks/use-rtdb';
-import { Save, RefreshCw, AlertTriangle, ShieldCheck, Database, CheckCircle2 } from 'lucide-react';
+import { Save, RefreshCw, AlertTriangle, ShieldCheck, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 

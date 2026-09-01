@@ -6,35 +6,44 @@ import { cn } from '@/lib/utils';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 
 interface KPIProps {
-  current: SensorData;
+  current: SensorData | null;
   config: ThresholdConfig;
 }
 
 const generateData = () => Array.from({ length: 12 }, () => ({ v: 10 + Math.random() * 20 }));
 
 export function KPISection({ current, config }: KPIProps) {
+  // Use real values from 'current' prop if available, otherwise fallback to defaults
+  const data = current || {
+    vibration: 0,
+    temperature: 0,
+    speed: 0,
+    alignment: 0,
+    unit: ''
+  };
+
   const cards = [
     {
       label: 'Vibration',
-      value: 8.6,
+      value: data.vibration,
       unit: 'mm/s',
-      status: 'critical',
+      status: data.vibration > config.vibration.critical ? 'critical' : data.vibration > config.vibration.warning ? 'warning' : 'normal',
       color: 'text-red-500',
       waveColor: '#ef4444',
       data: generateData()
     },
     {
       label: 'Temperature',
-      value: 32.4,
+      value: data.temperature,
       unit: '°C',
-      status: 'normal',
+      status: data.temperature > config.temperature.critical ? 'critical' : data.temperature > config.temperature.warning ? 'warning' : 'normal',
       color: 'text-primary',
       waveColor: '#22c55e',
       data: generateData()
     },
     {
       label: 'Belt Speed',
-      value: 2.45,
+      value: data.speed,
       unit: 'm/s',
       status: 'normal',
       color: 'text-blue-500',
@@ -43,9 +52,9 @@ export function KPISection({ current, config }: KPIProps) {
     },
     {
       label: 'Alignment',
-      value: 5.2,
+      value: data.alignment,
       unit: 'mm',
-      status: 'warning',
+      status: Math.abs(data.alignment) > config.alignment.critical ? 'critical' : Math.abs(data.alignment) > config.alignment.warning ? 'warning' : 'normal',
       color: 'text-orange-500',
       waveColor: '#f97316',
       data: generateData()
