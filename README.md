@@ -3,11 +3,25 @@
 
 Bhai, NodeMCU se data bhejne aur Buzzer control karne ke liye niche wala format use karo.
 
-## 🚀 API Endpoint (RTDB)
-Data ko is path par update karna hai:
+## 🚀 Fix Compilation Error
+Agar aapko `FirebaseESP8266.h: No such file or directory` error aa rahi hai:
+1. Arduino IDE mein jao.
+2. `Sketch` -> `Include Library` -> `Manage Libraries` click karo.
+3. Search karo: **Firebase-ESP8266**.
+4. **Mobizt** ki library install karo.
+
+## 📟 NodeMCU (Arduino) Library Requirements
+- `Firebase-ESP8266` (by Mobizt)
+- `ESP8266WiFi` (Built-in for ESP8266)
+
+## 🚨 Hardware Connections (NodeMCU)
+1. **Buzzer (+) / Signal**: NodeMCU **Pin D1** (GPIO 5)
+2. **Buzzer (-)**: NodeMCU **GND**
+
+## 📊 Firebase Structure (RTDB)
+Data ko is path par update/read karna hai:
 `https://studio-8891714996-ea348-default-rtdb.firebaseio.com/`
 
-## 📊 Firebase Structure
 ```json
 {
   "current": {
@@ -22,17 +36,6 @@ Data ko is path par update karna hai:
   }
 }
 ```
-
-## 🛠 Hardware Connections (NodeMCU)
-1. **Buzzer (+) / Signal**: NodeMCU **Pin D1** (GPIO 5)
-2. **Buzzer (-)**: NodeMCU **GND**
-
-## 📟 NodeMCU (Arduino) Library Requirements
-- Install `Firebase-ESP8266` by Mobizt.
-- Install `ESP8266WiFi`.
-
-## 🚨 Alarm Handling
-Dashboard par "Trigger Alarm" button dabane se Firebase mein `/system/alarm` node `true` ho jata hai. NodeMCU is path ko har 1 second mein read karta hai aur `true` hone par D1 pin ko high kar deta hai (Buzzer ON).
 
 ## 🛠 Setup Steps
 1. **Firebase Rules**: Console mein jaake Realtime Database mein Rules ko `.read: true` aur `.write: true` set karo.
