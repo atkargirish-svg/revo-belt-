@@ -1,9 +1,18 @@
 
-# BELTGUARD AI - NodeMCU Integration Guide
+# BELTGUARD AI - NodeMCU Integration & Deployment Guide
 
-Bhai, NodeMCU se data bhejne aur Buzzer control karne ke liye niche wala format use karo.
+Bhai, NodeMCU se data bhejne, Buzzer control karne aur code ko GitHub par push karne ke liye niche wala format use karo.
 
-## 🚀 Fix Compilation Error
+## 🚀 GitHub Deployment (Push to Repo)
+Apne code ko GitHub par push karne ke liye terminal mein ye commands run karein:
+1. `git init`
+2. `git remote add origin https://github.com/atkargirish-svg/revo-belt-.git`
+3. `git add .`
+4. `git commit -m "Initial commit: BeltGuard AI System"`
+5. `git branch -M main`
+6. `git push -u origin main`
+
+## 🚀 Fix Compilation Error (NodeMCU)
 Agar aapko `FirebaseESP8266.h: No such file or directory` error aa rahi hai:
 1. Arduino IDE mein jao.
 2. `Sketch` -> `Include Library` -> `Manage Libraries` click karo.
