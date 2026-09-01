@@ -21,59 +21,61 @@ export function ConveyorVisualization({ sections, activeId }: Props) {
   ];
 
   return (
-    <div className="relative pt-8 pb-12">
-      <div className="flex justify-between max-w-[860px] mx-auto relative px-12 mb-6">
-        {zoneLabels.map((zone) => {
-          return (
-            <div key={zone.id} className="flex flex-col items-center gap-2 relative">
-              <div className={cn(
-                "w-12 py-1.5 rounded-md border text-center flex flex-col transition-all duration-500 bg-[#16171d]",
-                zone.status === 'critical' ? "border-red-500/50 text-red-500" :
-                zone.status === 'warning' ? "border-orange-500/50 text-orange-500" :
-                "border-primary/50 text-primary"
-              )}>
-                <span className="text-[9px] font-black uppercase tracking-tighter">{zone.id}</span>
-                <span className="text-[10px] font-bold">{zone.health}%</span>
-              </div>
-              <div className={cn(
-                "w-[1px] h-6 bg-zinc-800",
-                zone.status === 'critical' && "bg-red-500/50",
-                zone.status === 'warning' && "bg-orange-500/50",
-                zone.status === 'normal' && "bg-primary/50"
-              )} />
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="relative max-w-[900px] mx-auto">
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-12 border-[4px] border-zinc-800 rounded-full z-0" />
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-12 border-[4px] border-zinc-800 rounded-full z-0" />
-
-        <div className="h-10 w-full bg-zinc-900 border-y-[4px] border-zinc-800 rounded-full overflow-hidden flex items-center relative z-10 px-2 gap-1">
-          {Array.from({ length: 32 }).map((_, i) => {
-            let status: 'normal' | 'warning' | 'critical' = 'normal';
-            if (i >= 10 && i <= 15) status = 'critical';
-            if (i >= 16 && i <= 20) status = 'warning';
-            
+    <div className="relative pt-8 pb-12 overflow-x-auto scrollbar-hide">
+      <div className="min-w-[800px] lg:min-w-0">
+        <div className="flex justify-between max-w-[860px] mx-auto relative px-12 mb-6">
+          {zoneLabels.map((zone) => {
             return (
-              <motion.div 
-                key={i}
-                animate={status === 'critical' ? { opacity: [0.6, 1, 0.6] } : {}}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                className={cn(
-                  "flex-1 h-6 rounded-[4px] transition-all duration-700",
-                  status === 'critical' ? "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]" :
-                  status === 'warning' ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.3)]" :
-                  "bg-primary shadow-[0_0_10px_rgba(34,197,94,0.2)]"
-                )} 
-              />
+              <div key={zone.id} className="flex flex-col items-center gap-2 relative">
+                <div className={cn(
+                  "w-12 py-1.5 rounded-md border text-center flex flex-col transition-all duration-500 bg-[#16171d]",
+                  zone.status === 'critical' ? "border-red-500/50 text-red-500" :
+                  zone.status === 'warning' ? "border-orange-500/50 text-orange-500" :
+                  "border-primary/50 text-primary"
+                )}>
+                  <span className="text-[9px] font-black uppercase tracking-tighter">{zone.id}</span>
+                  <span className="text-[10px] font-bold">{zone.health}%</span>
+                </div>
+                <div className={cn(
+                  "w-[1px] h-6 bg-zinc-800",
+                  zone.status === 'critical' && "bg-red-500/50",
+                  zone.status === 'warning' && "bg-orange-500/50",
+                  zone.status === 'normal' && "bg-primary/50"
+                )} />
+              </div>
             );
           })}
         </div>
+
+        <div className="relative max-w-[900px] mx-auto">
+          <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-12 border-[4px] border-zinc-800 rounded-full z-0" />
+          <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-12 border-[4px] border-zinc-800 rounded-full z-0" />
+
+          <div className="h-10 w-full bg-zinc-900 border-y-[4px] border-zinc-800 rounded-full overflow-hidden flex items-center relative z-10 px-2 gap-1">
+            {Array.from({ length: 32 }).map((_, i) => {
+              let status: 'normal' | 'warning' | 'critical' = 'normal';
+              if (i >= 10 && i <= 15) status = 'critical';
+              if (i >= 16 && i <= 20) status = 'warning';
+              
+              return (
+                <motion.div 
+                  key={i}
+                  animate={status === 'critical' ? { opacity: [0.6, 1, 0.6] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className={cn(
+                    "flex-1 h-6 rounded-[4px] transition-all duration-700",
+                    status === 'critical' ? "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]" :
+                    status === 'warning' ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.3)]" :
+                    "bg-primary shadow-[0_0_10px_rgba(34,197,94,0.2)]"
+                  )} 
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-center gap-8 mt-10">
+      <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-8 mt-10">
         {[
           { color: 'bg-primary', label: 'Good (80-100%)' },
           { color: 'bg-orange-500', label: 'Warning (50-79%)' },
