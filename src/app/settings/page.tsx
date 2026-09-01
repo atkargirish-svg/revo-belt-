@@ -39,66 +39,62 @@ export default function SettingsPage() {
 
   const seedDemoData = async () => {
     setIsInitializing(true);
+    const timestamp = Date.now();
+    
     const sections: Record<string, any> = {
       "section_01": {
-        id: "section_01",
         name: "Section 01",
         status: "normal",
         vibration: 3.1,
         temperature: 41.2,
         speed: 1445,
         alignment: 0.6,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       },
       "section_02": {
-        id: "section_02",
         name: "Section 02",
         status: "normal",
         vibration: 3.8,
         temperature: 43.1,
         speed: 1452,
         alignment: 1.1,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       },
       "section_03": {
-        id: "section_03",
         name: "Section 03",
         status: "warning",
         vibration: 6.7,
         temperature: 55.2,
         speed: 1448,
         alignment: 2.8,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       },
       "section_04": {
-        id: "section_04",
         name: "Section 04",
         status: "normal",
         vibration: 3.4,
         temperature: 44.5,
         speed: 1450,
         alignment: 0.9,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       },
       "section_05": {
-        id: "section_05",
         name: "Section 05",
         status: "normal",
         vibration: 4.0,
         temperature: 46.2,
         speed: 1447,
         alignment: 1.4,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       },
       "section_06": {
-        id: "section_06",
         name: "Section 06",
         status: "normal",
         vibration: 3.2,
         temperature: 42.8,
         speed: 1451,
         alignment: 0.7,
-        lastUpdated: Date.now()
+        lastUpdated: timestamp
       }
     };
 
@@ -106,7 +102,7 @@ export default function SettingsPage() {
       system: {
         status: 'online',
         deviceId: 'BELT_NODE_01',
-        lastSeen: Date.now(),
+        lastSeen: timestamp,
         firmwareVersion: '1.0.0'
       },
       current: {
@@ -116,14 +112,19 @@ export default function SettingsPage() {
         alignment: 0.8,
         sectionId: 'section_03',
         sectionName: 'Section 03',
-        timestamp: Date.now()
+        timestamp: timestamp
       },
       sections,
       config: {
         thresholds: {
           vibration: { warning: 5, critical: 8 },
           temperature: { warning: 50, critical: 70 },
-          speed: { minWarning: 1000, maxWarning: 1600, minCritical: 800, maxCritical: 1800 },
+          speed: { 
+            minWarning: 1000, 
+            maxWarning: 1600, 
+            minCritical: 800, 
+            maxCritical: 1800 
+          },
           alignment: { warning: 2, critical: 5 }
         }
       },
@@ -136,18 +137,18 @@ export default function SettingsPage() {
           message: "High vibration detected at Section 03",
           value: 6.7,
           threshold: 5,
-          timestamp: Date.now(),
+          timestamp: timestamp,
           acknowledged: false
         }
       },
       history: {
-        [Date.now()]: {
+        [`hist_${timestamp}`]: {
           vibration: 3.2,
           temperature: 42.5,
           speed: 1450,
           alignment: 0.8,
           sectionId: "section_03",
-          timestamp: Date.now()
+          timestamp: timestamp
         }
       }
     };
@@ -156,14 +157,14 @@ export default function SettingsPage() {
       await set(ref(db), initialData);
       toast({
         title: "Database Seeding Successful",
-        description: "Precise industrial structure push completed.",
+        description: "Exact industrial structure set in Firebase RTDB.",
       });
     } catch (e: any) {
       console.error(e);
       toast({
         variant: "destructive",
         title: "Push Failed",
-        description: "Check your Firebase Rules (Rules tab -> set to true).",
+        description: "Please check your Firebase RTDB Rules (set to true).",
       });
     } finally {
       setIsInitializing(false);
@@ -206,12 +207,12 @@ export default function SettingsPage() {
           <div className="space-y-3">
             <div className="flex justify-between text-xs py-2 border-b border-zinc-800/50">
               <span className="text-zinc-500 font-bold uppercase tracking-wider">Device ID</span>
-              <span className="font-mono text-white">{system?.deviceId || 'DISCONNECTED'}</span>
+              <span className="font-mono text-white">{system?.deviceId || 'OFFLINE'}</span>
             </div>
             <div className="flex justify-between text-xs py-2">
               <span className="text-zinc-500 font-bold uppercase tracking-wider">RTDB Sync</span>
               <span className={cn("font-black uppercase tracking-widest", isConnected ? "text-primary" : "text-red-500")}>
-                {isConnected ? 'ONLINE' : 'OFFLINE'}
+                {isConnected ? 'ONLINE' : 'DISCONNECTED'}
               </span>
             </div>
           </div>
@@ -223,7 +224,7 @@ export default function SettingsPage() {
             <Database size={14} /> Database Reset
           </h3>
           <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
-            Click below to build the exact industrial zone structure (Z01-Z06) required by NodeMCU.
+            Reset Firebase RTDB to the exact Z01-Z06 industrial monitoring structure.
           </p>
           <button 
             onClick={seedDemoData}
@@ -231,7 +232,7 @@ export default function SettingsPage() {
             className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2"
           >
             {isInitializing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
-            Fix & Seed Database
+            Fix & Seed RTDB
           </button>
         </div>
 
