@@ -1,46 +1,41 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 224 71% 4%; /* Midnight Blue */
-    --foreground: 210 40% 98%; /* Slate-50 */
-
-    --card: 224 71% 9%; /* Darker Blue */
-    --card-foreground: 210 40% 98%;
-
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 130 84% 50%; /* Vibrant Green */
-    --primary-foreground: 224 71% 4%;
-
-    --secondary: 215 28% 17%; /* Slate-800 */
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 215 28% 17%;
-    --muted-foreground: 217 33% 65%; /* Slate-400 */
-
-    --accent: 130 84% 50%;
-    --accent-foreground: 224 71% 4%;
-
-    --destructive: 0 72% 51%; /* Brighter Red */
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 215 28% 17%; /* Slate-800 */
-    --input: 215 28% 17%;
-    --ring: 130 84% 50%;
-
-    --radius: 0.5rem;
-  }
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --card: #141414;
+  --border: #262626;
+  --primary: #22c55e;
+  --warning: #eab308;
+  --critical: #ef4444;
+  --info: #3b82f6;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+}
+
+.glass {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@keyframes pulse-subtle {
+  0% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.6; transform: scale(1); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
 }
