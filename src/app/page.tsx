@@ -1,13 +1,14 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import { useRTDB } from '@/hooks/use-rtdb';
 import { KPISection } from '@/components/dashboard/KPISection';
 import { ConveyorVisualization } from '@/components/dashboard/ConveyorVisualization';
 import { calculateHealthScore } from '@/lib/utils/health-score';
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
-import { ref, set } from 'firebase/database';
+import { ref, set, get } from 'firebase/database';
 import { 
   AlertCircle, 
   Activity, 
@@ -37,6 +38,63 @@ const dummyTrendData = [
 export default function Dashboard() {
   const { current, sections, alerts, config, system } = useRTDB();
 
+  // Auto-Initialization Logic
+  useEffect(() => {
+    const checkAndInit = async () => {
+      const snapshot = await get(ref(db, 'system'));
+      if (!snapshot.exists()) {
+        console.log("Initializing database structure...");
+        const ts = Date.now();
+        const initialData = {
+          system: {
+            status: 'online',
+            deviceId: 'BELT_NODE_01',
+            lastSeen: ts,
+            firmwareVersion: '1.0.0',
+            alarm: false
+          },
+          current: {
+            vibration: 3.2,
+            temperature: 42.5,
+            speed: 1450,
+            alignment: 0.8,
+            health: 76,
+            sectionId: 'section_03',
+            sectionName: 'Section 03',
+            timestamp: ts
+          },
+          sections: {
+            "section_01": { id: "section_01", name: "Section 01", status: "normal", vibration: 3.1, temperature: 41.2, speed: 1445, alignment: 0.6, lastUpdated: ts },
+            "section_02": { id: "section_02", name: "Section 02", status: "normal", vibration: 3.8, temperature: 43.1, speed: 1452, alignment: 1.1, lastUpdated: ts },
+            "section_03": { id: "section_03", name: "Section 03", status: "warning", vibration: 6.7, temperature: 55.2, speed: 1448, alignment: 2.8, lastUpdated: ts },
+            "section_04": { id: "section_04", name: "Section 04", status: "normal", vibration: 3.4, temperature: 44.5, speed: 1450, alignment: 0.9, lastUpdated: ts },
+            "section_05": { id: "section_05", name: "Section 05", status: "normal", vibration: 4.0, temperature: 46.2, speed: 1447, alignment: 1.4, lastUpdated: ts },
+            "section_06": { id: "section_06", name: "Section 06", status: "normal", vibration: 3.2, temperature: 42.8, speed: 1451, alignment: 0.7, lastUpdated: ts }
+          },
+          history: {
+            [`h_${ts}`]: { vibration: 3.2, temperature: 42.5, speed: 1450, alignment: 0.8, sectionId: "section_03", timestamp: ts }
+          },
+          alerts: {
+            "alert_init": {
+              id: "alert_init", severity: "warning", sensor: "vibration", sectionId: "section_03",
+              message: "High vibration detected at Section 03", value: 6.7, threshold: 5, timestamp: ts, acknowledged: false
+            }
+          },
+          config: {
+            thresholds: {
+              vibration: { warning: 5, critical: 8 },
+              temperature: { warning: 50, critical: 70 },
+              speed: { minWarning: 1000, maxWarning: 1600, minCritical: 800, maxCritical: 1800 },
+              alignment: { warning: 2, critical: 5 }
+            }
+          }
+        };
+        set(ref(db), initialData);
+      }
+    };
+    checkAndInit();
+  }, []);
+
   const activeConfig = config?.thresholds || {
     vibration: { warning: 5, critical: 8 },
     temperature: { warning: 50, critical: 70 },
@@ -44,17 +102,12 @@ export default function Dashboard() {
     alignment: { warning: 2, critical: 5 }
   };
 
-  // Prefer actual health from RTDB if available
   const healthScore = current?.health !== undefined ? current.health : (current ? calculateHealthScore(current, activeConfig) : 76);
-  const activeAlertsCount = alerts ? Object.values(alerts).filter(a => !a.acknowledged).length : 3;
+  const activeAlertsCount = alerts ? Object.values(alerts).filter(a => !a.acknowledged).length : 0;
 
   const toggleAlarm = async () => {
     const newStatus = !system?.alarm;
-    try {
-      await set(ref(db, 'system/alarm'), newStatus);
-    } catch (e) {
-      console.error("Failed to toggle alarm:", e);
-    }
+    set(ref(db, 'system/alarm'), newStatus);
   };
 
   return (
@@ -100,13 +153,6 @@ export default function Dashboard() {
                   <span className="text-[9px] font-bold text-zinc-600 uppercase">Status: {healthScore > 70 ? 'Good' : 'Critical'}</span>
                 </div>
               </div>
-            </div>
-            <div className="h-10 w-20 opacity-20 absolute -right-2 top-8 group-hover:opacity-40 transition-opacity">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={dummyTrendData.slice(0, 5)}>
-                  <Area type="monotone" dataKey="value" stroke="#22c55e" fill="none" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
             </div>
           </div>
 
@@ -196,66 +242,23 @@ export default function Dashboard() {
               <Zap size={64} className="text-red-500" />
             </div>
             <h3 className="text-xs font-black uppercase tracking-widest text-red-500 mb-6 flex items-center gap-2">
-              <Zap size={14} className="animate-pulse" /> Critical Alert Detected
+              <Zap size={14} className="animate-pulse" /> Monitoring Status
             </h3>
             <div className="space-y-6 relative z-10">
               <div>
-                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-widest mb-1">Zone 03 Fault</p>
-                <h4 className="text-xl font-bold">Section ID: B-1042</h4>
+                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-widest mb-1">Active Zone</p>
+                <h4 className="text-xl font-bold">{current?.sectionName || 'Searching...'}</h4>
               </div>
               <div className="space-y-4 py-6 border-y border-red-500/10">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Vibration Offset</span>
-                  <span className="text-lg font-bold text-red-500 font-mono">+{current?.vibration?.toFixed(1) || '0.0'} mm/s</span>
+                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Vibration</span>
+                  <span className="text-lg font-bold text-red-500 font-mono">{current?.vibration?.toFixed(1) || '0.0'} mm/s</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Status</span>
-                  <span className="text-lg font-bold text-red-500 font-mono">{healthScore}% Health</span>
+                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Health Score</span>
+                  <span className="text-lg font-bold text-primary font-mono">{healthScore}%</span>
                 </div>
               </div>
-              <button className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-red-900/20">
-                Analyze Failure Data
-              </button>
-            </div>
-          </div>
-
-          <div className="industrial-card p-8">
-            <h3 className="text-xs font-black uppercase tracking-widest mb-8 text-zinc-500">Node Status Details</h3>
-            <div className="space-y-5">
-              {[
-                { label: 'Device ID', val: system?.deviceId || 'OFFLINE', font: 'font-mono text-[10px]' },
-                { label: 'Active Zone', val: current?.sectionName || 'Zone 03' },
-                { label: 'Firmware', val: system?.firmwareVersion || 'v1.0.0', font: 'font-mono' },
-                { label: 'Sync Status', val: 'Healthy', color: 'text-primary' },
-                { label: 'Signal Str.', val: '-42 dBm', font: 'font-mono' },
-              ].map((item, i) => (
-                <div key={i} className="flex justify-between items-center text-xs pb-4 border-b border-zinc-800/50 last:border-0 last:pb-0">
-                  <span className="text-zinc-600 font-black uppercase tracking-widest text-[9px]">{item.label}</span>
-                  <span className={cn("text-white font-bold", item.color, item.font)}>{item.val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="industrial-card p-8">
-            <h3 className="text-xs font-black uppercase tracking-widest mb-8 text-zinc-500">Quick Tools</h3>
-            <div className="space-y-4">
-              {[
-                { icon: MapIcon, title: 'Spatial Mapping', sub: 'Interactive 3D viewport' },
-                { icon: FileText, title: 'Shift Report', sub: 'Last 8h operational summary' },
-                { icon: Wrench, title: 'Calibrate Sensors', sub: 'Zero-point alignment' },
-              ].map((action, i) => (
-                <button key={i} className="w-full bg-[#1e1f26]/30 hover:bg-[#1e1f26]/60 border border-zinc-800/50 p-4 rounded-xl flex items-center gap-4 group transition-all">
-                  <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-primary group-hover:bg-primary/10 transition-all">
-                    <action.icon size={18} />
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="text-[11px] font-bold text-white leading-tight">{action.title}</p>
-                    <p className="text-[9px] text-zinc-600 font-medium">{action.sub}</p>
-                  </div>
-                  <ChevronRight size={14} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
-                </button>
-              ))}
             </div>
           </div>
         </div>

@@ -6,41 +6,27 @@
       "description": "Real-time telemetry from NodeMCU sensors",
       "type": "object",
       "properties": {
-        "vibration": { "type": "number", "description": "Vibration levels in mm/s" },
-        "temperature": { "type": "number", "description": "Thermal levels in Celsius" },
-        "speed": { "type": "number", "description": "Belt speed in m/s" },
-        "alignment": { "type": "number", "description": "Lateral offset in mm" },
-        "sectionId": { "type": "string", "description": "Active monitoring zone ID" },
-        "sectionName": { "type": "string", "description": "Friendly name of the section" },
-        "timestamp": { "type": "number", "description": "Unix epoch timestamp" }
-      },
-      "required": ["vibration", "temperature", "speed", "alignment", "timestamp"]
-    },
-    "SectionStatus": {
-      "title": "SectionStatus",
-      "description": "State and health of a specific conveyor segment",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "status": { "type": "string", "enum": ["normal", "warning", "critical"] },
         "vibration": { "type": "number" },
         "temperature": { "type": "number" },
-        "lastUpdated": { "type": "number" }
-      }
+        "speed": { "type": "number" },
+        "alignment": { "type": "number" },
+        "health": { "type": "number" },
+        "sectionId": { "type": "string" },
+        "sectionName": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["vibration", "temperature", "speed", "alignment", "health", "timestamp"]
     },
-    "SystemConfig": {
-      "title": "SystemConfig",
-      "description": "Threshold limits for triggering alerts",
+    "SystemStatus": {
+      "title": "SystemStatus",
+      "description": "Operational state and hardware alarm control",
       "type": "object",
       "properties": {
-        "thresholds": {
-          "type": "object",
-          "properties": {
-            "vibration": { "type": "object", "properties": { "warning": { "type": "number" }, "critical": { "type": "number" } } },
-            "temperature": { "type": "object", "properties": { "warning": { "type": "number" }, "critical": { "type": "number" } } }
-          }
-        }
+        "status": { "type": "string", "enum": ["online", "offline"] },
+        "deviceId": { "type": "string" },
+        "firmwareVersion": { "type": "string" },
+        "alarm": { "type": "boolean" },
+        "lastSeen": { "type": "number" }
       }
     }
   },
@@ -50,15 +36,11 @@
   "firestore": {
     "/current": {
       "schema": "SensorReading",
-      "description": "The latest active sensor broadcast node"
+      "description": "Latest sensor state for the conveyor"
     },
-    "/sections/{sectionId}": {
-      "schema": "SectionStatus",
-      "description": "Historical health status for belt segments"
-    },
-    "/config": {
-      "schema": "SystemConfig",
-      "description": "Global operational thresholds"
+    "/system": {
+      "schema": "SystemStatus",
+      "description": "Global system status and hardware controls"
     }
   }
 }
