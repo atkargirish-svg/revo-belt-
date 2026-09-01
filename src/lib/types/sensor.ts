@@ -12,9 +12,10 @@ export interface SensorData {
   temperature: number;
   speed: number;
   alignment: number;
-  sectionId: string;
-  sectionName: string;
-  timestamp: number;
+  health: number; // Added as requested
+  sectionId?: string;
+  sectionName?: string;
+  timestamp?: number;
 }
 
 export interface SectionStatus {

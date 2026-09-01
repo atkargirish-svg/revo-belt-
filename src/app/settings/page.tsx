@@ -41,62 +41,13 @@ export default function SettingsPage() {
     setIsInitializing(true);
     const timestamp = Date.now();
     
-    // Exact Industrial Structure Requested
     const sections: Record<string, any> = {
-      "section_01": {
-        name: "Section 01",
-        status: "normal",
-        vibration: 3.1,
-        temperature: 41.2,
-        speed: 1445,
-        alignment: 0.6,
-        lastUpdated: timestamp
-      },
-      "section_02": {
-        name: "Section 02",
-        status: "normal",
-        vibration: 3.8,
-        temperature: 43.1,
-        speed: 1452,
-        alignment: 1.1,
-        lastUpdated: timestamp
-      },
-      "section_03": {
-        name: "Section 03",
-        status: "warning",
-        vibration: 6.7,
-        temperature: 55.2,
-        speed: 1448,
-        alignment: 2.8,
-        lastUpdated: timestamp
-      },
-      "section_04": {
-        name: "Section 04",
-        status: "normal",
-        vibration: 3.4,
-        temperature: 44.5,
-        speed: 1450,
-        alignment: 0.9,
-        lastUpdated: timestamp
-      },
-      "section_05": {
-        name: "Section 05",
-        status: "normal",
-        vibration: 4.0,
-        temperature: 46.2,
-        speed: 1447,
-        alignment: 1.4,
-        lastUpdated: timestamp
-      },
-      "section_06": {
-        name: "Section 06",
-        status: "normal",
-        vibration: 3.2,
-        temperature: 42.8,
-        speed: 1451,
-        alignment: 0.7,
-        lastUpdated: timestamp
-      }
+      "section_01": { name: "Section 01", status: "normal", vibration: 3.1, temperature: 41.2, speed: 1445, alignment: 0.6, lastUpdated: timestamp },
+      "section_02": { name: "Section 02", status: "normal", vibration: 3.8, temperature: 43.1, speed: 1452, alignment: 1.1, lastUpdated: timestamp },
+      "section_03": { name: "Section 03", status: "warning", vibration: 6.7, temperature: 55.2, speed: 1448, alignment: 2.8, lastUpdated: timestamp },
+      "section_04": { name: "Section 04", status: "normal", vibration: 3.4, temperature: 44.5, speed: 1450, alignment: 0.9, lastUpdated: timestamp },
+      "section_05": { name: "Section 05", status: "normal", vibration: 4.0, temperature: 46.2, speed: 1447, alignment: 1.4, lastUpdated: timestamp },
+      "section_06": { name: "Section 06", status: "normal", vibration: 3.2, temperature: 42.8, speed: 1451, alignment: 0.7, lastUpdated: timestamp }
     };
 
     const initialData = {
@@ -112,6 +63,7 @@ export default function SettingsPage() {
         temperature: 42.5,
         speed: 1450,
         alignment: 0.8,
+        health: 76,
         sectionId: 'section_03',
         sectionName: 'Section 03',
         timestamp: timestamp
@@ -121,42 +73,19 @@ export default function SettingsPage() {
         thresholds: {
           vibration: { warning: 5, critical: 8 },
           temperature: { warning: 50, critical: 70 },
-          speed: { 
-            minWarning: 1000, 
-            maxWarning: 1600, 
-            minCritical: 800, 
-            maxCritical: 1800 
-          },
+          speed: { minWarning: 1000, maxWarning: 1600, minCritical: 800, maxCritical: 1800 },
           alignment: { warning: 2, critical: 5 }
         }
       },
       alerts: {
         "alert_001": {
-          id: "alert_001",
-          severity: "warning",
-          sensor: "vibration",
-          sectionId: "section_03",
-          message: "High vibration detected at Section 03",
-          value: 6.7,
-          threshold: 5,
-          timestamp: timestamp,
-          acknowledged: false
-        }
-      },
-      history: {
-        [`hist_${timestamp}`]: {
-          vibration: 3.2,
-          temperature: 42.5,
-          speed: 1450,
-          alignment: 0.8,
-          sectionId: "section_03",
-          timestamp: timestamp
+          id: "alert_001", severity: "warning", sensor: "vibration", sectionId: "section_03",
+          message: "High vibration detected at Section 03", value: 6.7, threshold: 5, timestamp: timestamp, acknowledged: false
         }
       }
     };
 
     try {
-      // Direct set to Firebase RTDB root
       await set(ref(db), initialData);
       toast({
         title: "Database Seeding Successful",
@@ -193,7 +122,6 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        {/* Connection Status */}
         <div className={cn(
           "industrial-card p-6 space-y-4 border-2",
           isConnected ? "border-primary/20" : "border-red-500/20"
@@ -221,13 +149,12 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Database Fix Section */}
         <div className="industrial-card p-6 space-y-4 border-blue-500/20 bg-blue-500/[0.02]">
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 flex items-center gap-2">
             <Database size={14} /> Database Reset
           </h3>
           <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
-            Reset Firebase RTDB to the exact Z01-Z06 industrial monitoring structure.
+            Reset Firebase RTDB to the exact industrial monitoring structure requested.
           </p>
           <button 
             onClick={seedDemoData}
@@ -239,7 +166,6 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* Threshold Editor */}
         {localConfig && (
           <div className="md:col-span-2 industrial-card p-8 space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
@@ -250,81 +176,44 @@ export default function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Vibration */}
               <div className="space-y-5 p-5 rounded-2xl bg-zinc-900/30 border border-zinc-800/50">
                 <p className="text-[10px] font-black uppercase text-zinc-500 tracking-widest border-b border-zinc-800 pb-2">Vibration (mm/s)</p>
                 <div className="space-y-4">
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Warning</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={localConfig.vibration.warning}
-                      onChange={(e) => setLocalConfig({ ...localConfig, vibration: { ...localConfig.vibration, warning: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50"
-                    />
+                    <input type="number" step="0.1" value={localConfig.vibration.warning} onChange={(e) => setLocalConfig({ ...localConfig, vibration: { ...localConfig.vibration, warning: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50" />
                   </div>
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Critical</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={localConfig.vibration.critical}
-                      onChange={(e) => setLocalConfig({ ...localConfig, vibration: { ...localConfig.vibration, critical: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50"
-                    />
+                    <input type="number" step="0.1" value={localConfig.vibration.critical} onChange={(e) => setLocalConfig({ ...localConfig, vibration: { ...localConfig.vibration, critical: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50" />
                   </div>
                 </div>
               </div>
 
-              {/* Temperature */}
               <div className="space-y-5 p-5 rounded-2xl bg-zinc-900/30 border border-zinc-800/50">
                 <p className="text-[10px] font-black uppercase text-zinc-500 tracking-widest border-b border-zinc-800 pb-2">Thermal (°C)</p>
                 <div className="space-y-4">
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Warning</label>
-                    <input 
-                      type="number" 
-                      value={localConfig.temperature.warning}
-                      onChange={(e) => setLocalConfig({ ...localConfig, temperature: { ...localConfig.temperature, warning: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50"
-                    />
+                    <input type="number" value={localConfig.temperature.warning} onChange={(e) => setLocalConfig({ ...localConfig, temperature: { ...localConfig.temperature, warning: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50" />
                   </div>
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Critical</label>
-                    <input 
-                      type="number" 
-                      value={localConfig.temperature.critical}
-                      onChange={(e) => setLocalConfig({ ...localConfig, temperature: { ...localConfig.temperature, critical: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50"
-                    />
+                    <input type="number" value={localConfig.temperature.critical} onChange={(e) => setLocalConfig({ ...localConfig, temperature: { ...localConfig.temperature, critical: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50" />
                   </div>
                 </div>
               </div>
 
-              {/* Alignment */}
                <div className="space-y-5 p-5 rounded-2xl bg-zinc-900/30 border border-zinc-800/50">
                 <p className="text-[10px] font-black uppercase text-zinc-500 tracking-widest border-b border-zinc-800 pb-2">Alignment (mm)</p>
                 <div className="space-y-4">
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Warning Offset</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={localConfig.alignment.warning}
-                      onChange={(e) => setLocalConfig({ ...localConfig, alignment: { ...localConfig.alignment, warning: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50"
-                    />
+                    <input type="number" step="0.1" value={localConfig.alignment.warning} onChange={(e) => setLocalConfig({ ...localConfig, alignment: { ...localConfig.alignment, warning: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-orange-500 focus:outline-none focus:border-orange-500/50" />
                   </div>
                   <div>
                     <label className="text-[9px] text-zinc-500 block mb-1.5 uppercase font-black tracking-widest">Critical Offset</label>
-                    <input 
-                      type="number" 
-                      step="0.1"
-                      value={localConfig.alignment.critical}
-                      onChange={(e) => setLocalConfig({ ...localConfig, alignment: { ...localConfig.alignment, critical: parseFloat(e.target.value) } })}
-                      className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50"
-                    />
+                    <input type="number" step="0.1" value={localConfig.alignment.critical} onChange={(e) => setLocalConfig({ ...localConfig, alignment: { ...localConfig.alignment, critical: parseFloat(e.target.value) } })} className="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm font-mono text-red-500 focus:outline-none focus:border-red-500/50" />
                   </div>
                 </div>
               </div>

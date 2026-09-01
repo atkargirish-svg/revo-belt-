@@ -44,7 +44,8 @@ export default function Dashboard() {
     alignment: { warning: 2, critical: 5 }
   };
 
-  const healthScore = current ? calculateHealthScore(current, activeConfig) : 76;
+  // Prefer actual health from RTDB if available
+  const healthScore = current?.health !== undefined ? current.health : (current ? calculateHealthScore(current, activeConfig) : 76);
   const activeAlertsCount = alerts ? Object.values(alerts).filter(a => !a.acknowledged).length : 3;
 
   const toggleAlarm = async () => {
@@ -86,7 +87,6 @@ export default function Dashboard() {
       </header>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        {/* KPI Row */}
         <div className="xl:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
           <div className="industrial-card p-6 flex items-center justify-between border-l-4 border-l-primary/50 relative overflow-hidden group">
             <div className="flex items-center gap-4 relative z-10">
@@ -97,7 +97,7 @@ export default function Dashboard() {
                 <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Overall Health</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-bold font-mono text-primary">{healthScore}%</span>
-                  <span className="text-[9px] font-bold text-zinc-600 uppercase">Status: Good</span>
+                  <span className="text-[9px] font-bold text-zinc-600 uppercase">Status: {healthScore > 70 ? 'Good' : 'Critical'}</span>
                 </div>
               </div>
             </div>
@@ -150,7 +150,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Main Content Area */}
         <div className="xl:col-span-8 space-y-8">
           <div className="industrial-card p-8 bg-[#16171d]">
             <div className="flex items-center justify-between mb-8">
@@ -191,7 +190,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Right Sidebar Area */}
         <div className="xl:col-span-4 space-y-8">
           <div className="industrial-card p-8 border-red-500/40 bg-red-500/[0.04] overflow-hidden relative">
             <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -208,11 +206,11 @@ export default function Dashboard() {
               <div className="space-y-4 py-6 border-y border-red-500/10">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] text-zinc-400 uppercase font-bold">Vibration Offset</span>
-                  <span className="text-lg font-bold text-red-500 font-mono">+8.6 mm/s</span>
+                  <span className="text-lg font-bold text-red-500 font-mono">+{current?.vibration?.toFixed(1) || '0.0'} mm/s</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Probability</span>
-                  <span className="text-lg font-bold text-red-500 font-mono">82% Critical</span>
+                  <span className="text-[10px] text-zinc-400 uppercase font-bold">Status</span>
+                  <span className="text-lg font-bold text-red-500 font-mono">{healthScore}% Health</span>
                 </div>
               </div>
               <button className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-red-900/20">
@@ -225,9 +223,9 @@ export default function Dashboard() {
             <h3 className="text-xs font-black uppercase tracking-widest mb-8 text-zinc-500">Node Status Details</h3>
             <div className="space-y-5">
               {[
-                { label: 'Device ID', val: 'BELT_NODE_01', font: 'font-mono text-[10px]' },
-                { label: 'Active Zone', val: 'Zone 03' },
-                { label: 'Firmware', val: 'v1.2.4', font: 'font-mono' },
+                { label: 'Device ID', val: system?.deviceId || 'OFFLINE', font: 'font-mono text-[10px]' },
+                { label: 'Active Zone', val: current?.sectionName || 'Zone 03' },
+                { label: 'Firmware', val: system?.firmwareVersion || 'v1.0.0', font: 'font-mono' },
                 { label: 'Sync Status', val: 'Healthy', color: 'text-primary' },
                 { label: 'Signal Str.', val: '-42 dBm', font: 'font-mono' },
               ].map((item, i) => (
