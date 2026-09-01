@@ -24,27 +24,49 @@ Professional predictive monitoring system for industrial conveyor belts.
      ```
 
 3. **Database Rules**:
-   - For prototype testing:
+   - For prototype testing (Realtime Database Rules):
      ```json
      {
        "rules": {
-         ".read": "true",
-         ".write": "true"
+         ".read": true,
+         ".write": true
        }
      }
      ```
 
 4. **Initialize Data**:
    - Go to the **Settings** page in the application.
-   - Click **"Seed Initial Database Structure"** to populate the system nodes.
+   - Click **"Seed Initial Database Structure"** to populate the system nodes. This is mandatory for the dashboard to function correctly.
 
-## 📊 Database Schema
+## 📊 Hardware Integration (NodeMCU/ESP32)
 
-- `/system`: Device health & heartbeat.
-- `/current`: Live sensor telemetry.
-- `/sections`: Section-specific diagnostics.
-- `/config/thresholds`: User-defined safety limits.
-- `/alerts`: Log of fault events.
+Your NodeMCU should push data to the `/current` path in JSON format. 
 
-## 🛠 Hardware Connection
-Your ESP32/NodeMCU should write to the `/current` node using the Firebase Arduino library. The dashboard will automatically reflect changes via real-time listeners.
+**API Endpoint Path**: `/current`
+**Data Schema (JSON)**:
+```json
+{
+  "vibration": 3.4,     // Value in mm/s
+  "temperature": 45.2,   // Value in °C
+  "speed": 1.45,         // Value in m/s
+  "alignment": 0.5,      // Offset in mm
+  "sectionId": "section_01", // The active belt section ID
+  "sectionName": "Main Belt",
+  "timestamp": 1716542400000 // UNIX Epoch in milliseconds
+}
+```
+
+To update overall section health, write to `/sections/<id>`:
+```json
+{
+  "status": "normal",
+  "vibration": 2.5,
+  "temperature": 40.0,
+  "lastUpdated": 1716542400000
+}
+```
+
+## 🛠 Features
+- **Real-time Synchronization**: Powered by Firebase Realtime Database.
+- **Predictive Analytics**: Genkit-powered operational insights.
+- **Industrial UI**: High-fidelity dashboard optimized for factory floors.
