@@ -1,33 +1,40 @@
 
 # BELTGUARD AI - NodeMCU Integration Guide
 
-Bhai, NodeMCU se data bhejne ke liye niche wala format use karo. Dashboard auto-update ho jayega.
+Bhai, NodeMCU se data bhejne aur Buzzer control karne ke liye niche wala format use karo.
 
-## 🚀 API Endpoint
-Data ko is path par **PATCH** ya **PUT** karna hai:
-`https://studio-8891714996-ea348-default-rtdb.firebaseio.com/current.json`
+## 🚀 API Endpoint (RTDB)
+Data ko is path par update karna hai:
+`https://studio-8891714996-ea348-default-rtdb.firebaseio.com/`
 
-## 📊 JSON Format (Hardware Side)
-Aapka ESP32/NodeMCU niche wala JSON structure send karega:
-
+## 📊 Firebase Structure
 ```json
 {
-  "vibration": 3.2,
-  "temperature": 42.5,
-  "speed": 1450,
-  "alignment": 0.8,
-  "health": 76,
-  "sectionId": "section_03",
-  "sectionName": "Section 03",
-  "timestamp": 1716542400000 
+  "current": {
+    "vibration": 3.2,
+    "temperature": 42.5,
+    "speed": 1450,
+    "alignment": 0.8,
+    "health": 76
+  },
+  "system": {
+    "alarm": false
+  }
 }
 ```
 
+## 🛠 Hardware Connections (NodeMCU)
+1. **Buzzer (+) / Signal**: NodeMCU **Pin D1** (GPIO 5)
+2. **Buzzer (-)**: NodeMCU **GND**
+
+## 📟 NodeMCU (Arduino) Library Requirements
+- Install `Firebase-ESP8266` by Mobizt.
+- Install `ESP8266WiFi`.
+
 ## 🚨 Alarm Handling
-Buzzer control karne ke liye is path ko monitor karo:
-`https://studio-8891714996-ea348-default-rtdb.firebaseio.com/system/alarm.json`
+Dashboard par "Trigger Alarm" button dabane se Firebase mein `/system/alarm` node `true` ho jata hai. NodeMCU is path ko har 1 second mein read karta hai aur `true` hone par D1 pin ko high kar deta hai (Buzzer ON).
 
 ## 🛠 Setup Steps
-1. **Firebase Rules**: Console mein jaao, Realtime Database select karo, aur **Rules** tab mein `.read` aur `.write` ko `true` kar do.
-2. **Seeding**: App ke **Settings** page par jaake "Fix & Seed" button dabao taaki initial nodes ban jayein.
-3. **Check Live**: Data send hote hi Dashboard par green signals active ho jayenge.
+1. **Firebase Rules**: Console mein jaake Realtime Database mein Rules ko `.read: true` aur `.write: true` set karo.
+2. **Seeding**: Dashboard load hote hi structure auto-create ho jayega.
+3. **Connect Hardware**: D1 pin par buzzer lagao aur enjoy karo!
