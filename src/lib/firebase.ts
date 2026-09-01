@@ -12,9 +12,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Ensure databaseURL is present or Firebase will throw a fatal error
+// Log a descriptive error if databaseURL is missing to guide the user
 if (!firebaseConfig.databaseURL && typeof window !== 'undefined') {
-  console.warn("Firebase Database URL is missing. Check your .env.local file.");
+  console.error("CRITICAL: Firebase Database URL is missing! Dashboard will not function. Please add NEXT_PUBLIC_FIREBASE_DATABASE_URL to your environment variables.");
 }
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);

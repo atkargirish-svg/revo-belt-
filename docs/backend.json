@@ -1,0 +1,64 @@
+
+{
+  "entities": {
+    "SensorReading": {
+      "title": "SensorReading",
+      "description": "Real-time telemetry from NodeMCU sensors",
+      "type": "object",
+      "properties": {
+        "vibration": { "type": "number", "description": "Vibration levels in mm/s" },
+        "temperature": { "type": "number", "description": "Thermal levels in Celsius" },
+        "speed": { "type": "number", "description": "Belt speed in m/s" },
+        "alignment": { "type": "number", "description": "Lateral offset in mm" },
+        "sectionId": { "type": "string", "description": "Active monitoring zone ID" },
+        "sectionName": { "type": "string", "description": "Friendly name of the section" },
+        "timestamp": { "type": "number", "description": "Unix epoch timestamp" }
+      },
+      "required": ["vibration", "temperature", "speed", "alignment", "timestamp"]
+    },
+    "SectionStatus": {
+      "title": "SectionStatus",
+      "description": "State and health of a specific conveyor segment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["normal", "warning", "critical"] },
+        "vibration": { "type": "number" },
+        "temperature": { "type": "number" },
+        "lastUpdated": { "type": "number" }
+      }
+    },
+    "SystemConfig": {
+      "title": "SystemConfig",
+      "description": "Threshold limits for triggering alerts",
+      "type": "object",
+      "properties": {
+        "thresholds": {
+          "type": "object",
+          "properties": {
+            "vibration": { "type": "object", "properties": { "warning": { "type": "number" }, "critical": { "type": "number" } } },
+            "temperature": { "type": "object", "properties": { "warning": { "type": "number" }, "critical": { "type": "number" } } }
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/current": {
+      "schema": "SensorReading",
+      "description": "The latest active sensor broadcast node"
+    },
+    "/sections/{sectionId}": {
+      "schema": "SectionStatus",
+      "description": "Historical health status for belt segments"
+    },
+    "/config": {
+      "schema": "SystemConfig",
+      "description": "Global operational thresholds"
+    }
+  }
+}
