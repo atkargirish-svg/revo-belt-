@@ -13,37 +13,34 @@ interface KPIProps {
 const generateData = () => Array.from({ length: 12 }, () => ({ v: 10 + Math.random() * 20 }));
 
 export function KPISection({ current, config }: KPIProps) {
-  // Use real values from 'current' prop if available, otherwise fallback to defaults
-  const data = current || {
-    vibration: 0,
-    temperature: 0,
-    speed: 0,
-    alignment: 0,
-    unit: ''
-  };
+  // Robust numeric fallbacks to prevent "toFixed of undefined" errors
+  const vibration = current?.vibration ?? 0;
+  const temperature = current?.temperature ?? 0;
+  const speed = current?.speed ?? 0;
+  const alignment = current?.alignment ?? 0;
 
   const cards = [
     {
       label: 'Vibration',
-      value: data.vibration,
+      value: vibration,
       unit: 'mm/s',
-      status: data.vibration > config.vibration.critical ? 'critical' : data.vibration > config.vibration.warning ? 'warning' : 'normal',
+      status: vibration > (config?.vibration?.critical ?? 8) ? 'critical' : vibration > (config?.vibration?.warning ?? 5) ? 'warning' : 'normal',
       color: 'text-red-500',
       waveColor: '#ef4444',
       data: generateData()
     },
     {
       label: 'Temperature',
-      value: data.temperature,
+      value: temperature,
       unit: '°C',
-      status: data.temperature > config.temperature.critical ? 'critical' : data.temperature > config.temperature.warning ? 'warning' : 'normal',
+      status: temperature > (config?.temperature?.critical ?? 70) ? 'critical' : temperature > (config?.temperature?.warning ?? 50) ? 'warning' : 'normal',
       color: 'text-primary',
       waveColor: '#22c55e',
       data: generateData()
     },
     {
       label: 'Belt Speed',
-      value: data.speed,
+      value: speed,
       unit: 'm/s',
       status: 'normal',
       color: 'text-blue-500',
@@ -52,9 +49,9 @@ export function KPISection({ current, config }: KPIProps) {
     },
     {
       label: 'Alignment',
-      value: data.alignment,
+      value: alignment,
       unit: 'mm',
-      status: Math.abs(data.alignment) > config.alignment.critical ? 'critical' : Math.abs(data.alignment) > config.alignment.warning ? 'warning' : 'normal',
+      status: Math.abs(alignment) > (config?.alignment?.critical ?? 5) ? 'critical' : Math.abs(alignment) > (config?.alignment?.warning ?? 2) ? 'warning' : 'normal',
       color: 'text-orange-500',
       waveColor: '#f97316',
       data: generateData()
@@ -77,7 +74,7 @@ export function KPISection({ current, config }: KPIProps) {
                 card.status === 'warning' ? 'text-orange-500' : 
                 card.label === 'Belt Speed' ? 'text-blue-500' : 'text-primary'
               )}>
-                {card.value.toFixed(1)}
+                {Number(card.value || 0).toFixed(1)}
               </span>
               <span className="text-zinc-600 text-[9px] font-bold uppercase">{card.unit}</span>
             </div>
